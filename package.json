@@ -1,0 +1,16 @@
+{
+  "name": "ms-authentication",
+  "version": "1.0.0",
+  "description": "Microservice criado no curso 'explorando o estilo arquitetural rest com nodejs'",
+  "main": "./dist/index.js",
+  "scripts": {
+    "start": "node ./",
+    "build":"tsc -p ."
+  },
+  "author": "Victor H M Lima",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^17.0.16",
+    "typescript": "^4.5.5"
+  }
+}

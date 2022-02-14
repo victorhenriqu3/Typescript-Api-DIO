@@ -31,6 +31,18 @@ class UserRepository {
     const [newUser] = rows;
     return newUser.uuid;
   }
+
+  async updateUser(user: User): Promise<void> {
+    const script = `UPDATE application_user 
+    SET
+      username = $1, 
+      password = crypt($2, 'my-pepper')
+    WHERE uuid = $3
+    `;
+
+    const values = [user.username, user.password, user.uuid];
+    await db.query<{ uuid: string }>(script, values);
+  }
 }
 
 export default new UserRepository();

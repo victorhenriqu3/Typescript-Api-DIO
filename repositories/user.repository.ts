@@ -1,4 +1,5 @@
 import db from "../src/db";
+import DatabaseError from "../src/models/Errors/error.model";
 import User from "../src/models/user.model";
 
 class UserRepository {
@@ -10,13 +11,17 @@ class UserRepository {
   }
 
   async findByUuid(uuid: string): Promise<User> {
-    const values = [uuid];
-    const sql = `SELECT uuid,username FROM application_user WHERE uuid = $1`;
+    try {
+      const values = [uuid];
+      const sql = `SELECT uuid,username FROM application_user WHERE uuid = $1`;
 
-    const { rows } = await db.query<User>(sql, values);
-    const [user] = rows;
+      const { rows } = await db.query<User>(sql, values);
+      const [user] = rows;
 
-    return user;
+      return user;
+    } catch (error) {
+      throw new DatabaseError("Erro na requisição por Uuid", error);
+    }
   }
 
   async createUser(user: User): Promise<string> {

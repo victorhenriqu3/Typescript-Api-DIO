@@ -1,4 +1,5 @@
-import express, { NextFunction, Request, Response } from "express";
+import express from "express";
+import errorHandler from "./middlewares/error_handler.middlewares";
 import statusRoute from "./routes/status.route";
 import usersRoute from "./routes/users.route";
 
@@ -11,9 +12,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(usersRoute);
 app.use(statusRoute);
 
-app.get("/status", (req: Request, res: Response, next: NextFunction) => {
-  res.status(200).send({ foo: "ba" });
-});
+//Configuração de Handler de Erro
+app.use(errorHandler);
 
 //Inicializa o Servidor
 app.listen(3000, () => {

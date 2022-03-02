@@ -1,38 +1,44 @@
-import JWT from "jsonwebtoken";
 import { NextFunction, Request, Response } from "express";
-import ForbiddenError from "../models/Errors/fobbiden.error.model";
+import JWT from "jsonwebtoken";
 import userRepository from "../../repositories/user.repository";
+import ForbiddenError from "../models/Errors/fobbiden.error.model";
 async function bearerAutheticationMiddleware(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const authorizationHeader = req.headers["authorization"];
+    const authorizationHeader = req.headers.authorization;
+
     if (!authorizationHeader) {
-      throw new ForbiddenError("Credenciais não informadas !");
+      throw new ForbiddenError("Credenciais not found");
     }
 
-    const [autheticationType, token] = authorizationHeader.split(" ");
-    if (autheticationType !== "Bearer" || !token) {
-      throw new ForbiddenError("Tipo de Autenticação inválida !");
+    const [authorizationType, jwtToken] = authorizationHeader.split(" ");
+
+    if (authorizationType !== "Bearer") {
+      throw new ForbiddenError("Invalid authorization type");
     }
 
-    const tokenPayload = JWT.verify(token, "teste");
-
-    if (typeof tokenPayload !== "object" || !tokenPayload.sub) {
-      throw new ForbiddenError("Token Inválido! ");
+    if (!jwtToken) {
+      throw new ForbiddenError("Invalid token");
     }
 
-    const uuid = tokenPayload.sub;
+    try {
+      const tokenPayload = JWT.verify(jwtToken, "teste");
+      if (typeof tokenPayload !== "object" || !tokenPayload.sub) {
+        throw new ForbiddenError("Invalid token");
+      }
 
-    const user = await userRepository.findByUuid(uuid);
-
-    req.user = user;
-
-    next();
+      const user = await userRepository.findByUuid(tokenPayload.sub);
+      req.user = user;
+      return next();
+    } catch (error) {
+      throw new ForbiddenError("Invalid token");
+    }
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
+
 export default bearerAutheticationMiddleware;

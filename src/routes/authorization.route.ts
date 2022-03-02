@@ -2,6 +2,7 @@ import { NextFunction, Request, Response, Router } from "express";
 import { StatusCodes } from "http-status-codes";
 import JWT from "jsonwebtoken";
 import basicAutheticationMiddleware from "../middlewares/basic-authentication.middleware";
+import bearerAutheticationMiddleware from "../middlewares/bearer-authentication.middleware";
 
 const authorizationRoute = Router();
 
@@ -19,6 +20,14 @@ authorizationRoute.post(
     } catch (error) {
       next(error);
     }
+  }
+);
+
+authorizationRoute.post(
+  "/token/validate",
+  bearerAutheticationMiddleware,
+  (req: Request, res: Response, next: NextFunction) => {
+    res.sendStatus(StatusCodes.OK);
   }
 );
 

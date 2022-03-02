@@ -14,6 +14,7 @@ authorizationRoute.post(
       const token = JWT.sign({}, "teste", {
         audience: "consumer-uuid or api key",
         subject: req.user?.uuid,
+        expiresIn: "5m",
       });
 
       return res.status(StatusCodes.OK).json({ token });
